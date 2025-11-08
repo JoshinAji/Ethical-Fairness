@@ -1,0 +1,12 @@
+{
+  "race_ml": {"type":"list|string","sep":"|","allowed":["White","Black","EastAsian","SouthAsian","SoutheastAsian","MiddleEastern","Latino","Other","Unknown"]},
+  "skin_tone_bin": {"type":"ordinal","range":[1,7],"unknown":"Unknown","notes":"Coarse, annotator-confirmed."},
+  "cultural_markers": {"type":"list|string","sep":"|","allowed":["religious_headwear","traditional_attire","tattoo_visible","piercing_visible","beard","none"]},
+  "ambiguous_mixed": {"type":"binary","allowed":[0,1]},
+  "prefer_not_to_label": {"type":"binary","allowed":[0,1]},
+  "unknown_uncertain": {"type":"binary","allowed":[0,1]},
+  "conf_race": {"type":"float","range":[0.0,1.0]},
+  "conf_gender": {"type":"float","range":[0.0,1.0]},
+  "conf_skin": {"type":"float","range":[0.0,1.0]},
+  "annotation_notes": {"type":"string","free_text":true}
+}

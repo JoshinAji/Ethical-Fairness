@@ -1,0 +1,7 @@
+split,race,n
+test,Black,14
+test,White,14
+train,Black,65
+train,White,65
+val,Black,14
+val,White,14
