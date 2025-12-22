@@ -1,0 +1,4 @@
+Model,Type,Overall Score,Race Gap,Gender Gap
+v1_model,Single-Label,39.3%,0.745,0.067
+v2_model,Single-Label,23.7%,0.263,0.063
+v3_model,Multi-Label,0.000,0.000,0.000

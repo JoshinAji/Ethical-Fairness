@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V3 Manual Annotation Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .progress-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .image-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .image-container {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .metadata {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .metadata-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .metadata-row:last-child {
+            border-bottom: none;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            color: #495057;
+            width: 140px;
+            flex-shrink: 0;
+        }
+        
+        .metadata-value {
+            color: #212529;
+        }
+        
+        .annotation-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .annotation-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .annotation-group h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .checkbox-item:hover {
+            background: #e9ecef;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 14px;
+            user-select: none;
+        }
+        
+        .confidence-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .confidence-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .confidence-item label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .confidence-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .conf-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .conf-btn:hover {
+            border-color: #adb5bd;
+        }
+        
+        .conf-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .notes-section textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+        
+        .sample-input {
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .status-message {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .keyboard-hint {
+            font-size: 12px;
+            color: #6c757d;
+            padding: 10px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>V3 Manual Annotation Tool</h1>
+            <div class="progress-info">
+                <span id="progress">0 / 100</span> completed
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left Side: Image and Metadata -->
+            <div class="image-section">
+                <div class="image-container">
+                    <img id="sample-image" src="" alt="Sample image">
+                </div>
+                
+                <div class="metadata">
+                    <div class="metadata-row">
+                        <span class="metadata-label">Image ID:</span>
+                        <span class="metadata-value" id="image-id"></span>
+                    </div>
+                    <div class="metadata-row">
+                        <span class="metadata-label">Source:</span>
+                        <span class="metadata-value" id="source-dataset"></span>
+                    </div>
+                    <div class="metadata-row">
+                        <span class="metadata-label">Race Category:</span>
+                        <span class="metadata-value" id="race-cat"></span>
+                    </div>
+                    <div class="metadata-row">
+                        <span class="metadata-label">Gender Category:</span>
+                        <span class="metadata-value" id="gender-cat"></span>
+                    </div>
+                    <div class="metadata-row">
+                        <span class="metadata-label">Age Category:</span>
+                        <span class="metadata-value" id="age-cat"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Annotation Form -->
+            <div class="annotation-section">
+                <div class="annotation-group">
+                    <h3>Multi-Class Labels</h3>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cultural-markers" name="cultural_markers">
+                            <label for="cultural-markers">Cultural Markers (clothing, accessories, religious symbols)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ambiguous-mixed" name="ambiguous_mixed">
+                            <label for="ambiguous-mixed">Ambiguous/Mixed Race</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="prefer-not-label" name="prefer_not_to_label">
+                            <label for="prefer-not-label">Prefer Not to Label</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="unknown-uncertain" name="unknown_uncertain">
+                            <label for="unknown-uncertain">Unknown/Uncertain</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="annotation-group">
+                    <h3>Confidence Levels</h3>
+                    <div class="confidence-group">
+                        <div class="confidence-item">
+                            <label>Race Confidence:</label>
+                            <div class="confidence-buttons">
+                                <button class="conf-btn" data-field="conf_race" data-value="low">Low</button>
+                                <button class="conf-btn" data-field="conf_race" data-value="medium">Medium</button>
+                                <button class="conf-btn" data-field="conf_race" data-value="high">High</button>
+                            </div>
+                        </div>
+                        <div class="confidence-item">
+                            <label>Gender Confidence:</label>
+                            <div class="confidence-buttons">
+                                <button class="conf-btn" data-field="conf_gender" data-value="low">Low</button>
+                                <button class="conf-btn" data-field="conf_gender" data-value="medium">Medium</button>
+                                <button class="conf-btn" data-field="conf_gender" data-value="high">High</button>
+                            </div>
+                        </div>
+                        <div class="confidence-item">
+                            <label>Skin Tone Confidence:</label>
+                            <div class="confidence-buttons">
+                                <button class="conf-btn" data-field="conf_skin" data-value="low">Low</button>
+                                <button class="conf-btn" data-field="conf_skin" data-value="medium">Medium</button>
+                                <button class="conf-btn" data-field="conf_skin" data-value="high">High</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="annotation-group notes-section">
+                    <h3>Annotation Notes</h3>
+                    <textarea id="annotation-notes" placeholder="Add any additional notes or observations..."></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div id="status-message" class="status-message"></div>
+            <button class="btn btn-primary" id="save-btn">Save & Next</button>
+            <button class="btn btn-secondary" id="skip-btn">Skip</button>
+            
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prev-btn">← Previous</button>
+                <input type="number" id="sample-input" class="sample-input" min="0" value="0">
+                <button class="btn btn-secondary" id="next-btn">Next →</button>
+            </div>
+        </div>
+        
+        <div class="keyboard-hint">
+            💡 Keyboard shortcuts: S = Save & Next | N = Next | P = Previous | Space = Skip
+        </div>
+    </div>
+    
+    <script>
+        let currentIndex = 0;
+        let totalSamples = 100;
+        let currentData = null;
+        
+        // Initialize
+        loadSample(0);
+        updateProgress();
+        
+        // Load sample data
+        async function loadSample(index) {
+            try {
+                const response = await fetch(`/api/sample/${index}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    showStatus('Error loading sample', 'error');
+                    return;
+                }
+                
+                currentData = data;
+                currentIndex = index;
+                totalSamples = data.total;
+                
+                // Update UI
+                document.getElementById('sample-image').src = `/images/${data.image_filename}`;
+                document.getElementById('image-id').textContent = data.image_id;
+                document.getElementById('source-dataset').textContent = data.source_dataset;
+                document.getElementById('race-cat').textContent = data.race_cat;
+                document.getElementById('gender-cat').textContent = data.gender_cat;
+                document.getElementById('age-cat').textContent = data.age_cat || 'N/A';
+                
+                // Load annotations
+                document.getElementById('cultural-markers').checked = data.cultural_markers === '1' || data.cultural_markers === 'True';
+                document.getElementById('ambiguous-mixed').checked = data.ambiguous_mixed === '1' || data.ambiguous_mixed === 'True';
+                document.getElementById('prefer-not-label').checked = data.prefer_not_to_label === '1' || data.prefer_not_to_label === 'True';
+                document.getElementById('unknown-uncertain').checked = data.unknown_uncertain === '1' || data.unknown_uncertain === 'True';
+                
+                // Load confidence levels
+                setConfidence('conf_race', data.conf_race);
+                setConfidence('conf_gender', data.conf_gender);
+                setConfidence('conf_skin', data.conf_skin);
+                
+                // Load notes
+                document.getElementById('annotation-notes').value = data.annotation_notes || '';
+                
+                // Update navigation
+                document.getElementById('sample-input').value = index;
+                document.getElementById('prev-btn').disabled = index === 0;
+                document.getElementById('next-btn').disabled = index >= totalSamples - 1;
+                
+            } catch (error) {
+                showStatus('Error loading sample', 'error');
+                console.error(error);
+            }
+        }
+        
+        // Save current annotations
+        async function saveAnnotations() {
+            const annotations = {
+                cultural_markers: document.getElementById('cultural-markers').checked ? '1' : '',
+                ambiguous_mixed: document.getElementById('ambiguous-mixed').checked ? '1' : '',
+                prefer_not_to_label: document.getElementById('prefer-not-label').checked ? '1' : '',
+                unknown_uncertain: document.getElementById('unknown-uncertain').checked ? '1' : '',
+                conf_race: getConfidence('conf_race'),
+                conf_gender: getConfidence('conf_gender'),
+                conf_skin: getConfidence('conf_skin'),
+                annotation_notes: document.getElementById('annotation-notes').value
+            };
+            
+            try {
+                const response = await fetch(`/api/save/${currentIndex}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(annotations)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    showStatus('Saved successfully!', 'success');
+                    updateProgress();
+                    return true;
+                }
+            } catch (error) {
+                showStatus('Error saving annotations', 'error');
+                console.error(error);
+            }
+            return false;
+        }
+        
+        // Update progress
+        async function updateProgress() {
+            try {
+                const response = await fetch('/api/progress');
+                const data = await response.json();
+                document.getElementById('progress').textContent = `${data.annotated} / ${data.total}`;
+            } catch (error) {
+                console.error('Error updating progress:', error);
+            }
+        }
+        
+        // Confidence button helpers
+        function setConfidence(field, value) {
+            document.querySelectorAll(`[data-field="${field}"]`).forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === value);
+            });
+        }
+        
+        function getConfidence(field) {
+            const activeBtn = document.querySelector(`[data-field="${field}"].active`);
+            return activeBtn ? activeBtn.dataset.value : '';
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status-message');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            setTimeout(() => {
+                statusEl.className = 'status-message';
+            }, 3000);
+        }
+        
+        // Event listeners
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            if (await saveAnnotations()) {
+                if (currentIndex < totalSamples - 1) {
+                    loadSample(currentIndex + 1);
+                }
+            }
+        });
+        
+        document.getElementById('skip-btn').addEventListener('click', () => {
+            if (currentIndex < totalSamples - 1) {
+                loadSample(currentIndex + 1);
+            }
+        });
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentIndex > 0) {
+                loadSample(currentIndex - 1);
+            }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentIndex < totalSamples - 1) {
+                loadSample(currentIndex + 1);
+            }
+        });
+        
+        document.getElementById('sample-input').addEventListener('change', (e) => {
+            const index = parseInt(e.target.value);
+            if (index >= 0 && index < totalSamples) {
+                loadSample(index);
+            }
+        });
+        
+        // Confidence button clicks
+        document.querySelectorAll('.conf-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const field = btn.dataset.field;
+                const value = btn.dataset.value;
+                setConfidence(field, value);
+            });
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger if typing in textarea
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+                return;
+            }
+            
+            if (e.key === 's' || e.key === 'S') {
+                document.getElementById('save-btn').click();
+            } else if (e.key === 'n' || e.key === 'N' || e.key === 'ArrowRight') {
+                document.getElementById('next-btn').click();
+            } else if (e.key === 'p' || e.key === 'P' || e.key === 'ArrowLeft') {
+                document.getElementById('prev-btn').click();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('skip-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
