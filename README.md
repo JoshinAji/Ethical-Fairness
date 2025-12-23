@@ -237,34 +237,6 @@ Outputs:
 - Criminal justice facial recognition
 - Financial services identity verification
 
----
-
-## Citation
-
-If you use this work, please cite:
-
-```
-Joshin Aji. (2024). Fair Demographic Classification with Multi-Label Annotations.
-Ethics in AI Project.
-```
-
----
-
-## References
-
-- **UTKFace**: Zhang et al. (2017)
-- **FairFace**: Karkkainen & Joo (2021)
-- **Gender Shades**: Buolamwini & Gebru (2018)
-- **Datasheets for Datasets**: Gebru et al. (2018)
-
----
-
-## Contact
-
-For questions about this project, please refer to the accompanying project report.
-
----
-
 ## Main Takeaway
 
 **Human diversity cannot be reduced to single-choice checkboxes without compromising both fairness and dignity. Multi-label annotation represents a more ethical, accurate, and equitable approach to building AI systems worthy of public trust.**
